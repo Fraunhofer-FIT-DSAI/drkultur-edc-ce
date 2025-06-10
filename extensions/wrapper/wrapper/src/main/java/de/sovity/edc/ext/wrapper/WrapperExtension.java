@@ -39,6 +39,8 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.CoreConstants;
 import org.eclipse.edc.spi.asset.AssetIndex;
+import org.eclipse.edc.spi.iam.IdentityService;
+import org.eclipse.edc.spi.iam.TokenDecorator;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
@@ -68,6 +70,8 @@ public class WrapperExtension implements ServiceExtension {
     @Inject
     private ContractNegotiationStore contractNegotiationStore;
     @Inject
+    private IdentityService identityService;
+    @Inject
     private DslContextFactory dslContextFactory;
     @Inject
     private DspApiConfiguration dspApiConfiguration;
@@ -77,6 +81,8 @@ public class WrapperExtension implements ServiceExtension {
     private PolicyDefinitionStore policyDefinitionStore;
     @Inject
     private PolicyEngine policyEngine;
+    @Inject
+    private TokenDecorator tokenDecorator;
     @Inject
     private TransferProcessService transferProcessService;
     @Inject
@@ -103,6 +109,9 @@ public class WrapperExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         var objectMapper = typeManager.getMapper(CoreConstants.JSON_LD);
         fixObjectMapperDateSerialization(objectMapper);
+        var connectorsHost = context.getSetting("drk.edc.connectors.host", "");
+        var bscwHost = context.getSetting("drk.edc.bscw.host", "");
+        var managementApiKey = context.getSetting("edc.api.auth.key", "");
 
         var wrapperExtensionContext = WrapperExtensionContextBuilder.buildContext(
             assetIndex,
@@ -115,6 +124,7 @@ public class WrapperExtension implements ServiceExtension {
             contractDefinitionStore,
             contractNegotiationService,
             contractNegotiationStore,
+            identityService,
             dslContextFactory,
             jsonLd,
             context.getMonitor(),
@@ -122,9 +132,13 @@ public class WrapperExtension implements ServiceExtension {
             policyDefinitionService,
             policyDefinitionStore,
             policyEngine,
+            tokenDecorator,
             transferProcessService,
             transferProcessStore,
-            typeTransformerRegistry
+            typeTransformerRegistry,
+            connectorsHost,
+            bscwHost,
+            managementApiKey
         );
 
         wrapperExtensionContext.selfDescriptionService().validateSelfDescriptionConfig();

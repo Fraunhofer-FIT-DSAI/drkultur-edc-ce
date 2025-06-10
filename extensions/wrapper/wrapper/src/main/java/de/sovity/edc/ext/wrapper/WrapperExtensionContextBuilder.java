@@ -38,6 +38,7 @@ import de.sovity.edc.ext.wrapper.api.common.mappers.policy.PolicyValidator;
 import de.sovity.edc.ext.wrapper.api.ui.UiResourceImpl;
 import de.sovity.edc.ext.wrapper.api.ui.pages.asset.AssetApiService;
 import de.sovity.edc.ext.wrapper.api.ui.pages.asset.AssetIdValidator;
+import de.sovity.edc.ext.wrapper.api.ui.pages.asset.BscwApiService;
 import de.sovity.edc.ext.wrapper.api.ui.pages.catalog.CatalogApiService;
 import de.sovity.edc.ext.wrapper.api.ui.pages.catalog.UiDataOfferBuilder;
 import de.sovity.edc.ext.wrapper.api.ui.pages.contract_agreements.ContractAgreementPageApiService;
@@ -98,6 +99,8 @@ import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.policy.engine.spi.PolicyEngine;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.asset.AssetIndex;
+import org.eclipse.edc.spi.iam.IdentityService;
+import org.eclipse.edc.spi.iam.TokenDecorator;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
@@ -128,6 +131,7 @@ public class WrapperExtensionContextBuilder {
         ContractDefinitionStore contractDefinitionStore,
         ContractNegotiationService contractNegotiationService,
         ContractNegotiationStore contractNegotiationStore,
+        IdentityService identityService,
         DslContextFactory dslContextFactory,
         JsonLd jsonLd,
         Monitor monitor,
@@ -135,9 +139,13 @@ public class WrapperExtensionContextBuilder {
         PolicyDefinitionService policyDefinitionService,
         PolicyDefinitionStore policyDefinitionStore,
         PolicyEngine policyEngine,
+        TokenDecorator tokenDecorator,
         TransferProcessService transferProcessService,
         TransferProcessStore transferProcessStore,
-        TypeTransformerRegistry typeTransformerRegistry
+        TypeTransformerRegistry typeTransformerRegistry,
+        String connectorsHost,
+        String bscwHost,
+        String managementApiKey
     ) {
         // UI API
         var operatorMapper = new OperatorMapper();
@@ -171,7 +179,8 @@ public class WrapperExtensionContextBuilder {
         );
         var contractAgreementApiService = new ContractAgreementPageApiService(
             contractAgreementDataFetcher,
-            contractAgreementPageCardBuilder
+            contractAgreementPageCardBuilder,
+            managementApiKey
         );
         var contactDefinitionBuilder = new ContractDefinitionBuilder(criterionMapper);
         var contractDefinitionApiService = new ContractDefinitionApiService(
@@ -224,7 +233,11 @@ public class WrapperExtensionContextBuilder {
         var dspCatalogService = new DspCatalogService(catalogService, dataOfferBuilder);
         var catalogApiService = new CatalogApiService(
             uiDataOfferBuilder,
-            dspCatalogService
+            dspCatalogService,
+            identityService,
+            tokenDecorator,
+            objectMapper,
+            connectorsHost
         );
         var contractOfferMapper = new ContractOfferMapper(policyMapper);
         var contractNegotiationBuilder = new ContractNegotiationBuilder(contractOfferMapper);
@@ -255,6 +268,8 @@ public class WrapperExtensionContextBuilder {
             contractDefinitionApiService,
             policyDefinitionApiService
         );
+        var bscwApiService = new BscwApiService(bscwHost);
+
         var uiResource = new UiResourceImpl(
             contractAgreementApiService,
             contractAgreementTransferApiService,
@@ -268,7 +283,8 @@ public class WrapperExtensionContextBuilder {
             contractNegotiationApiService,
             dashboardApiService,
             dslContextFactory,
-            dataOfferPageApiService
+            dataOfferPageApiService,
+            bscwApiService
         );
 
         // Use Case API

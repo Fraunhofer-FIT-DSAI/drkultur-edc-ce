@@ -16,6 +16,7 @@ package de.sovity.edc.ext.wrapper.api.common.mappers.asset;
 
 import de.sovity.edc.ext.wrapper.api.common.mappers.asset.utils.AssetJsonLdUtils;
 import de.sovity.edc.ext.wrapper.api.common.mappers.asset.utils.ShortDescriptionBuilder;
+import de.sovity.edc.ext.wrapper.api.common.model.AssetType;
 import de.sovity.edc.ext.wrapper.api.common.model.DataSourceAvailability;
 import de.sovity.edc.ext.wrapper.api.common.model.UiAsset;
 import de.sovity.edc.utils.JsonUtils;
@@ -95,11 +96,30 @@ public class AssetJsonLdParser {
         uiAsset.setDataUpdateFrequency(JsonLdUtils.string(properties, Prop.Dcterms.ACCRUAL_PERIODICITY));
         uiAsset.setKeywords(JsonLdUtils.stringList(properties, Prop.Dcat.KEYWORDS));
 
+        //drk specific
+        String assetTypeString = JsonLdUtils.string(properties, Prop.Drk.ASSET_TYPE);
+        if(assetTypeString == null) {
+            assetTypeString = AssetType.GENERAL.toString();
+        }
+        final AssetType assetType = AssetType.valueOf(assetTypeString);
+        uiAsset.setDrkAssetType(assetType);
+        uiAsset.setDrkUpdateCheckFrequency(JsonLdUtils.string(properties, Prop.Drk.UPDATE_CHECK_FREQUENCY));
+        if(assetType == AssetType.THEATRE_PLAN) {
+            uiAsset.setDrkTheatreName(JsonLdUtils.string(properties, Prop.Schema.DRK_THEATRE_NAME));
+            uiAsset.setDrkTheatreStreetaddress(JsonLdUtils.string(properties, Prop.Schema.DRK_THEATRE_STREET_ADDRESS));
+            uiAsset.setDrkTheatrePostalCode(JsonLdUtils.string(properties, Prop.Schema.DRK_THEATRE_POSTAL_CODE));
+            uiAsset.setDrkTheatreLocality(JsonLdUtils.string(properties, Prop.Schema.DRK_THEATRE_LOCALITY));
+            uiAsset.setDrkTheatreCountry(JsonLdUtils.string(properties, Prop.Schema.DRK_THEATRE_COUNTRY));
+        } else if(assetType == AssetType.MUSEUM) {
+            uiAsset.setDrkMuseumName(JsonLdUtils.string(properties, Prop.Schema.DRK_MUSEUM_NAME));
+        } else if(assetType == AssetType.MUSICSCHOOL) {
+            uiAsset.setDrkMusicSchoolName(JsonLdUtils.string(properties, Prop.Schema.DRK_MUSIC_SCHOOL_NAME));
+        }
+
         uiAsset.setHttpDatasourceHintsProxyMethod(JsonLdUtils.bool(properties, HttpDatasourceHints.METHOD));
         uiAsset.setHttpDatasourceHintsProxyPath(JsonLdUtils.bool(properties, HttpDatasourceHints.PATH));
         uiAsset.setHttpDatasourceHintsProxyQueryParams(JsonLdUtils.bool(properties, HttpDatasourceHints.QUERY_PARAMS));
         uiAsset.setHttpDatasourceHintsProxyBody(JsonLdUtils.bool(properties, HttpDatasourceHints.BODY));
-
         var publisher = JsonLdUtils.object(properties, Prop.Dcterms.PUBLISHER);
         uiAsset.setPublisherHomepage(JsonLdUtils.string(publisher, Prop.Foaf.HOMEPAGE));
 
@@ -146,6 +166,18 @@ public class AssetJsonLdParser {
             Prop.MobilityDcatAp.MOBILITY_THEME,
             Prop.Dcterms.RIGHTS_HOLDER,
             Prop.Dcterms.ACCRUAL_PERIODICITY,
+
+            // DRK specific
+            Prop.Drk.ASSET_TYPE,
+            Prop.Drk.UPDATE_CHECK_FREQUENCY,
+            Prop.Schema.DRK_MUSEUM_NAME,
+            Prop.Schema.DRK_MUSIC_SCHOOL_NAME,
+            Prop.Schema.DRK_THEATRE_NAME,
+            Prop.Schema.DRK_THEATRE_STREET_ADDRESS,
+            Prop.Schema.DRK_THEATRE_POSTAL_CODE,
+            Prop.Schema.DRK_THEATRE_LOCALITY,
+            Prop.Schema.DRK_THEATRE_COUNTRY,
+
 
             HttpDatasourceHints.BODY,
             HttpDatasourceHints.METHOD,

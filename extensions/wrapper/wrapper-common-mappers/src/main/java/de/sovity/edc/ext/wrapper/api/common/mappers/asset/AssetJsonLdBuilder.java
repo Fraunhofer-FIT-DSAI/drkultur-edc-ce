@@ -125,6 +125,17 @@ public class AssetJsonLdBuilder {
         addNotBlankStringArray(properties, Prop.Dcat.KEYWORDS, request.getKeywords());
         addNonNull(properties, Prop.SovityDcatExt.CUSTOM_JSON, request.getCustomJsonAsString());
 
+        //drk specific
+        addNotBlank(properties, Prop.Drk.ASSET_TYPE, request.getDrkAssetType().toString());
+        addNotBlank(properties, Prop.Drk.UPDATE_CHECK_FREQUENCY, request.getDrkUpdateCheckFrequency());
+        addNotBlank(properties, Prop.Schema.DRK_THEATRE_NAME, request.getDrkTheatreName());
+        addNotBlank(properties, Prop.Schema.DRK_THEATRE_STREET_ADDRESS, request.getDrkTheatreStreetaddress());
+        addNotBlank(properties, Prop.Schema.DRK_THEATRE_POSTAL_CODE, request.getDrkTheatrePostalCode());
+        addNotBlank(properties, Prop.Schema.DRK_THEATRE_LOCALITY, request.getDrkTheatreLocality());
+        addNotBlank(properties, Prop.Schema.DRK_THEATRE_COUNTRY, request.getDrkTheatreCountry());
+        addNotBlank(properties, Prop.Schema.DRK_MUSEUM_NAME, request.getDrkMuseumName());
+        addNotBlank(properties, Prop.Schema.DRK_MUSIC_SCHOOL_NAME, request.getDrkMusicSchoolName());
+
         addPublisher(properties, request);
         addCreator(properties, organizationName);
         addDistribution(properties, request);

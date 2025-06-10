@@ -21,6 +21,7 @@ import de.sovity.edc.ext.wrapper.api.ui.model.AssetPage;
 import de.sovity.edc.ext.wrapper.api.ui.model.ContractAgreementCard;
 import de.sovity.edc.ext.wrapper.api.ui.model.ContractAgreementPage;
 import de.sovity.edc.ext.wrapper.api.ui.model.ContractAgreementPageQuery;
+import de.sovity.edc.ext.wrapper.api.ui.model.ContractAgreementDirection;
 import de.sovity.edc.ext.wrapper.api.ui.model.ContractDefinitionPage;
 import de.sovity.edc.ext.wrapper.api.ui.model.ContractDefinitionRequest;
 import de.sovity.edc.ext.wrapper.api.ui.model.ContractNegotiationRequest;
@@ -34,10 +35,12 @@ import de.sovity.edc.ext.wrapper.api.ui.model.InitiateTransferRequest;
 import de.sovity.edc.ext.wrapper.api.ui.model.PolicyDefinitionCreateDto;
 import de.sovity.edc.ext.wrapper.api.ui.model.PolicyDefinitionCreateRequest;
 import de.sovity.edc.ext.wrapper.api.ui.model.PolicyDefinitionPage;
+import de.sovity.edc.ext.wrapper.api.ui.model.QuerySpecDto;
 import de.sovity.edc.ext.wrapper.api.ui.model.TransferHistoryPage;
 import de.sovity.edc.ext.wrapper.api.ui.model.UiContractNegotiation;
 import de.sovity.edc.ext.wrapper.api.ui.model.UiDataOffer;
 import de.sovity.edc.ext.wrapper.api.ui.pages.asset.AssetApiService;
+import de.sovity.edc.ext.wrapper.api.ui.pages.asset.BscwApiService;
 import de.sovity.edc.ext.wrapper.api.ui.pages.catalog.CatalogApiService;
 import de.sovity.edc.ext.wrapper.api.ui.pages.contract_agreements.ContractAgreementPageApiService;
 import de.sovity.edc.ext.wrapper.api.ui.pages.contract_agreements.ContractAgreementTerminationApiService;
@@ -74,6 +77,7 @@ public class UiResourceImpl implements UiResource {
     private final DashboardPageApiService dashboardPageApiService;
     private final DslContextFactory dslContextFactory;
     private final DataOfferPageApiService dataOfferPageApiService;
+    private final BscwApiService bscwApiService;
 
     @Override
     public DashboardPage getDashboardPage() {
@@ -98,6 +102,11 @@ public class UiResourceImpl implements UiResource {
     @Override
     public IdResponseDto deleteAsset(String assetId) {
         return assetApiService.deleteAsset(assetId);
+    }
+
+    @Override
+    public String getBscwMetadataForOID(int oid, String authorization) {
+        return bscwApiService.getMetadataForOID(oid, authorization);
     }
 
     @Override
@@ -142,8 +151,16 @@ public class UiResourceImpl implements UiResource {
     }
 
     @Override
-    public List<UiDataOffer> getCatalogPageDataOffers(String connectorEndpoint) {
-        return catalogApiService.fetchDataOffers(connectorEndpoint);
+    public List<UiDataOffer> getCatalogPageDataOffers(String connectorEndpoint, QuerySpecDto querySpecDto) {
+        return catalogApiService.fetchDataOffers(connectorEndpoint, querySpecDto);
+    }
+
+    @Override
+    public List<String> getCatalogPageContractedAssetIds() {
+        return dslContextFactory.transactionResult(dsl -> contractAgreementApiService.contractAgreementPage(dsl, null).getContractAgreements().stream()
+            .filter(ca -> ca.getDirection() == ContractAgreementDirection.CONSUMING)
+            .map(ca -> ca.getAsset().getAssetId())
+            .toList());
     }
 
     @Override

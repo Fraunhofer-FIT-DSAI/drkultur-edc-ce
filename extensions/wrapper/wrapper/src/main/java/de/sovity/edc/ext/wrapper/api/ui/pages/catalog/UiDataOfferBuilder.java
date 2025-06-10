@@ -32,13 +32,18 @@ public class UiDataOfferBuilder {
     private final AssetMapper assetMapper;
     private final PolicyMapper policyMapper;
 
+    public List<UiDataOffer> buildUiDataOffers(List<DspCatalog> dspCatalog) {
+        // contrary to the upstream implementation, we handle a list of catalogs here which is flattened to a single list of data offers.
+        return dspCatalog.stream().map(this::buildUiDataOffers).flatMap(List::stream).toList();
+    }
+
     public List<UiDataOffer> buildUiDataOffers(DspCatalog dspCatalog) {
         var endpoint = dspCatalog.getEndpoint();
         var participantId = dspCatalog.getParticipantId();
 
         return dspCatalog.getDataOffers().stream()
-                .map(dataOffer -> buildDataOffer(dataOffer, endpoint, participantId))
-                .toList();
+            .map(dataOffer -> buildDataOffer(dataOffer, endpoint, participantId))
+            .toList();
     }
 
     private UiDataOffer buildDataOffer(DspDataOffer dataOffer, String endpoint, String participantId) {

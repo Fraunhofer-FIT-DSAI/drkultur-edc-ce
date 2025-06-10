@@ -109,6 +109,37 @@ public class UiAssetCreateRequest {
     @Schema(description = "Temporal coverage end date (inclusive)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private LocalDate temporalCoverageToInclusive;
 
+    // DRK specific
+    @Schema(description = "Asset Type", requiredMode = Schema.RequiredMode.REQUIRED)
+    private AssetType drkAssetType;
+
+    @Schema(description = "Update Check Frequency (min)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String drkUpdateCheckFrequency;
+
+    // DRK specific - UC3
+    @Schema(description = "Theatre Name", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String drkTheatreName;
+
+    @Schema(description = "Theatre Streetaddress", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String drkTheatreStreetaddress;
+
+    @Schema(description = "Theatre Postal Code", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String drkTheatrePostalCode;
+
+    @Schema(description = "Theatre Locality", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String drkTheatreLocality;
+
+    @Schema(description = "Theatre Country", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String drkTheatreCountry;
+
+    // DRK specific - UC2
+    @Schema(description = "Museum Name", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String drkMuseumName;
+
+    // DRK specific - UC4
+    @Schema(description = "Music School Name", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String drkMusicSchoolName;
+
     @Schema(description = "Contains serialized custom properties in the JSON format.",
         requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String customJsonAsString;

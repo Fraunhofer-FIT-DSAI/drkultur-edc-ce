@@ -200,6 +200,14 @@ public class Prop {
         public final String SCHEMA = CTX + "schema";
     }
 
+    @UtilityClass
+    public class Drk {
+        public final String CTX = "https://w3id.org/drk/";
+
+        public final String ASSET_TYPE = CTX + "assetType";
+        public final String UPDATE_CHECK_FREQUENCY = CTX + "updateCheckFrequency";
+    }
+
     /**
      * Namespace skos as specified in
      * <a href="https://mobilitydcat-ap.github.io/mobilityDCAT-AP/releases/index.html#namespaces">mobilityDCAT-AP</a>
@@ -229,5 +237,18 @@ public class Prop {
         public final String CTX = "http://www.w3.org/2000/01/rdf-schema#";
         public final String LITERAL = CTX + "Literal";
         public final String LABEL = CTX + "label";
+    }
+
+    @UtilityClass
+    public class Schema {
+        public final String CTX = "https://schema.org/";
+        public final String DRK_THEATRE_NAME = CTX + "name";
+        public final String DRK_THEATRE_STREET_ADDRESS = CTX + "streetAddress";
+        public final String DRK_THEATRE_POSTAL_CODE = CTX + "postalCode";
+        public final String DRK_THEATRE_LOCALITY = CTX + "addressLocality";
+        public final String DRK_THEATRE_COUNTRY = CTX + "addressCountry";
+        public final String DRK_MUSEUM_NAME = CTX + "name";
+        public final String DRK_MUSIC_SCHOOL_NAME = CTX + "name";
+
     }
 }

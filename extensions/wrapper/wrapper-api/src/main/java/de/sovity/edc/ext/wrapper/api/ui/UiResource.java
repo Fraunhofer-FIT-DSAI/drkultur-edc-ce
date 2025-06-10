@@ -34,6 +34,7 @@ import de.sovity.edc.ext.wrapper.api.ui.model.InitiateTransferRequest;
 import de.sovity.edc.ext.wrapper.api.ui.model.PolicyDefinitionCreateDto;
 import de.sovity.edc.ext.wrapper.api.ui.model.PolicyDefinitionCreateRequest;
 import de.sovity.edc.ext.wrapper.api.ui.model.PolicyDefinitionPage;
+import de.sovity.edc.ext.wrapper.api.ui.model.QuerySpecDto;
 import de.sovity.edc.ext.wrapper.api.ui.model.TransferHistoryPage;
 import de.sovity.edc.ext.wrapper.api.ui.model.UiContractNegotiation;
 import de.sovity.edc.ext.wrapper.api.ui.model.UiDataOffer;
@@ -43,6 +44,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -89,6 +91,13 @@ interface UiResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(description = "Delete an Asset")
     IdResponseDto deleteAsset(@PathParam("assetId") String assetId);
+
+    @GET
+    @Path("pages/asset-page/bscw/{oid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @HeaderParam("Authorization")
+    @Operation(description = "Fetches metadata for a BSCW OID")
+    String getBscwMetadataForOID(@PathParam("oid") int oid, @HeaderParam("Authorization") String authorization);
 
     @GET
     @Path("pages/policy-page")
@@ -144,11 +153,18 @@ interface UiResource {
     @Operation(description = "Create a new asset, contract definition and optional policies. Uses the same id for the asset, the contract policy, the access policy and the contract definition")
     IdResponseDto createDataOffer(DataOfferCreationRequest dataOfferCreationRequest);
 
-    @GET
+    @POST
     @Path("pages/catalog-page/data-offers")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Fetch a connector's data offers")
-    List<UiDataOffer> getCatalogPageDataOffers(@QueryParam("connectorEndpoint") String connectorEndpoint);
+    List<UiDataOffer> getCatalogPageDataOffers(@QueryParam("connectorEndpoint") String connectorEndpoint, @Nullable QuerySpecDto querySpecDto);
+
+    @GET
+    @Path("pages/catalog-page/contract-asset-ids")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(description = "Fetch Asset IDs for Consuming Contracts")
+    List<String> getCatalogPageContractedAssetIds();
 
     @POST
     @Path("pages/catalog-page/contract-negotiations")

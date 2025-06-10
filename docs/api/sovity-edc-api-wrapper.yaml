@@ -268,6 +268,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssetPage'
+  /wrapper/ui/pages/catalog-page/contract-asset-ids:
+    get:
+      tags:
+      - UI
+      description: Fetch Asset IDs for Consuming Contracts
+      operationId: getCatalogPageContractedAssetIds
+      responses:
+        default:
+          description: default response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
   /wrapper/ui/pages/catalog-page/data-offers:
     get:
       tags:
